@@ -1,5 +1,6 @@
 package com.data_stream.proximitytextchat;
 
+import com.data_stream.proximitytextchat.Config.ProxTextConfig;
 import com.data_stream.proximitytextchat.Events.chatEventHandler;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
@@ -15,7 +16,9 @@ import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
@@ -59,6 +62,8 @@ public class Main {
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(chatEventHandler.class);
+
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ProxTextConfig.SPEC, "proximitytextchat-common.toml");
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
