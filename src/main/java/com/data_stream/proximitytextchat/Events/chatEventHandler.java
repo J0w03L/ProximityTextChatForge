@@ -17,7 +17,7 @@ import java.util.Random;
 
 public class chatEventHandler {
     @SubscribeEvent
-    public static void chatEvent(ServerChatEvent.Submitted event) {
+    public static void chatEvent(ServerChatEvent event) {
         final BlockPos playerPos = event.getPlayer().blockPosition();
         final PlayerList playerList = ServerLifecycleHooks.getCurrentServer().getPlayerList();
 
