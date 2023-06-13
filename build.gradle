@@ -1,13 +1,15 @@
 plugins {
     id 'net.minecraftforge.gradle' version '5.1.+'
+    id "com.matthewprenger.cursegradle" version "1.4.0"
+    id "com.modrinth.minotaur" version "2.+"
 }
 
 
 group = 'com.data_stream'
-version = '1.0-SNAPSHOT'
+version = "${minecraft_version}-${mod_version}FE"
 
 java {
-    archivesBaseName = 'proximitytextchat'
+    archivesBaseName = 'ProximityTextChat'
     toolchain.languageVersion = JavaLanguageVersion.of(17)
 }
 
@@ -25,7 +27,7 @@ minecraft {
     //
     // Use non-default mappings at your own risk. They may not always work.
     // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'official', version: '1.19.3'
+    mappings channel: 'official', version: '1.20.1'
 
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -129,7 +131,7 @@ dependencies {
     // Specify the version of Minecraft to use. If this is any group other than 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency, and its patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.20-46.0.1'
+    minecraft 'net.minecraftforge:forge:1.20.1-47.0.1'
 
     // Real mod deobf dependency examples - these get remapped to your current mappings
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api") // Adds JEI API as a compile dependency
@@ -157,6 +159,58 @@ jar {
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
+}
+
+curseforge {
+    Properties properties = new Properties()
+    def propertiesFile = project.rootProject.file('local.properties')
+    if (propertiesFile.exists()) {
+        properties.load(propertiesFile.newDataInputStream())
+    }
+    ext.curseforgetoken = properties.getProperty('curseforgetoken')
+
+    apiKey = ext.curseforgetoken
+    project {
+        id = '716287'
+        releaseType = 'release'
+        addGameVersion minecraft_version
+        addGameVersion "Forge"
+
+        mainArtifact(jar) {
+            displayName = "[FORGE] [$minecraft_version] Proximity Text Chat"
+
+        }
+    }
+    options {
+
+    }
+}
+
+modrinth {
+    Properties properties = new Properties()
+    def propertiesFile = project.rootProject.file('local.properties')
+    if (propertiesFile.exists()) {
+        properties.load(propertiesFile.newDataInputStream())
+    }
+    ext.modrinthtoken = properties.getProperty('modrinthtoken')
+
+    token = ext.modrinthtoken // This is the default. Remember to have the MODRINTH_TOKEN environment variable set or else this will fail, or set it to whatever you want - just make sure it stays private!
+    projectId = "proximity-text-chat" // This can be the project ID or the slug. Either will work!
+    versionName = "[FORGE] [$minecraft_version] Proximity Text Chat"
+    versionNumber = "${mod_version}fe" // You don't need to set this manually. Will fail if Modrinth has this version already
+    versionType = "release" // This is the default -- can also be `beta` or `alpha`
+    uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
+    gameVersions = [minecraft_version] // Must be an array, even with only one version
+}
+
+task upload {
+    dependsOn tasks.modrinth
+    dependsOn tasks.curseforge
+}
+
+afterEvaluate {
+    tasks.curseforge.dependsOn jar
+    tasks.modrinth.dependsOn jar
 }
 
 jar.finalizedBy('reobfJar')
