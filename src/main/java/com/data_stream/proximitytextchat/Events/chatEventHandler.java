@@ -2,19 +2,16 @@ package com.data_stream.proximitytextchat.Events;
 
 import com.data_stream.proximitytextchat.Config.ProxTextConfig;
 import com.data_stream.proximitytextchat.Main;
-import net.minecraft.Util;
-import net.minecraft.client.gui.components.ChatComponent;
-import net.minecraft.commands.arguments.MessageArgument;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.ChatType;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.players.PlayerList;
+import net.minecraft.server.management.PlayerList;
+import net.minecraft.util.Util;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ChatType;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
+
 
 import java.awt.*;
 import java.util.Random;
@@ -28,7 +25,7 @@ public class chatEventHandler {
         for (int i = 0; i < playerList.getPlayers().size(); i++) {
             final double distance = Math.sqrt(playerList.getPlayers().get(i).blockPosition().distSqr(playerPos));
             if (distance <= ProxTextConfig.PROX_RANGE.get()) {
-                playerList.getPlayers().get(i).sendMessage(new TextComponent("<" + event.getPlayer().getName().getString() + "> " + event.getMessage().toString()), ChatType.SYSTEM, Util.NIL_UUID);
+                playerList.getPlayers().get(i).sendMessage(new StringTextComponent("<" + event.getPlayer().getName().getString() + "> " + event.getMessage().toString()), ChatType.SYSTEM, Util.NIL_UUID);
             }
             if (distance >= ProxTextConfig.PROX_RANGE.get() && distance <= ProxTextConfig.DIST_RANGE.get() && ProxTextConfig.TOGGLEDISTORTION.get()) {
                 String[] words = event.getMessage().toString().split("\\s+");
@@ -49,7 +46,7 @@ public class chatEventHandler {
                     }
                     newmessage = newmessage + words[j] + " ";
                 }
-                playerList.getPlayers().get(i).sendMessage(new TextComponent("<" + event.getPlayer().getName().getString() + "> " + newmessage), ChatType.SYSTEM, Util.NIL_UUID);
+                playerList.getPlayers().get(i).sendMessage(new StringTextComponent("<" + event.getPlayer().getName().getString() + "> " + newmessage), ChatType.SYSTEM, Util.NIL_UUID);
             }
         }
 
